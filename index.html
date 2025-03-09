@@ -29,6 +29,7 @@
       flex-direction: column;
       align-items: center;
     }
+    /* Standard-Nachricht über dem Spielfeld */
     .message {
       font-size: 2.5em;
       margin-bottom: 40px;
@@ -116,8 +117,9 @@
       80% { transform: translate(10px, 0); }
       100% { transform: translate(0, 0); }
     }
+    /* Shake-Animation auf 1 Sekunde eingestellt */
     .defeat-animation {
-      animation: shake 0.8s;
+      animation: shake 1s;
     }
     .modal-overlay {
       position: fixed;
@@ -146,7 +148,6 @@
     .hidden {
       display: none;
     }
-
     /* Responsive Anpassungen für kleinere Displays (Smartphones) */
     @media (max-width: 600px) {
       .board {
@@ -329,6 +330,12 @@
     function endGame(resultMessage) {
       gameActive = false;
       messageEl.innerText = resultMessage;
+      // Falls es der Niederlagetext ist, Schriftgröße leicht verkleinern:
+      if (resultMessage === "Das war knapp! Versuche es noch einmal - Übung macht den Meister!") {
+        messageEl.style.fontSize = "2em";
+      } else {
+        messageEl.style.fontSize = "2.5em";
+      }
       boardEl.querySelectorAll(".cell").forEach(cell =>
         cell.removeEventListener("click", handleCellClick)
       );
@@ -379,11 +386,14 @@
       }
     }
 
+    // Shake-Animation dauert 1 Sekunde; danach 2 Sekunden warten, bevor das Pop-up erscheint
     function startDefeatAnimation() {
       boardEl.classList.add("defeat-animation");
       boardEl.addEventListener("animationend", () => {
-        boardEl.classList.remove("defeat-animation");
-        defeatModal.classList.remove("hidden");
+        setTimeout(() => {
+          boardEl.classList.remove("defeat-animation");
+          defeatModal.classList.remove("hidden");
+        }, 2000);
       }, { once: true });
     }
 
