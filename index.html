@@ -7,7 +7,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
 
-    /* Weiches Pastell-Blau für den Body – kinderfreundlich und angenehm */
+    /* Grundstil – kinderfreundlich und angenehm */
     body {
       font-family: 'Comic Neue', cursive;
       text-align: center;
@@ -22,7 +22,6 @@
       overflow: hidden;
       color: #ecf0f1;
     }
-    /* Container für Spielfeld und Nachricht – transparent, sodass nur die 9 weißen Zellen sichtbar sind */
     .game-container {
       background: transparent;
       padding: 20px;
@@ -30,14 +29,12 @@
       flex-direction: column;
       align-items: center;
     }
-    /* Siegernachricht oberhalb des Spielfelds, jetzt in einem dunklen Farbton */
     .message {
       font-size: 2.5em;
       margin-bottom: 40px;
       color: #2c3e50;
       font-weight: bold;
     }
-    /* Spielfeld: 500×500 px, einheitlicher Abstand (20px) zwischen allen Zellen */
     .board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -45,7 +42,6 @@
       width: 500px;
       height: 500px;
     }
-    /* Zellen: weiße Kästchen mit dunklen Rändern und kräftigem Schatten, damit sie sich vom Hintergrund abheben */
     .cell {
       background: white;
       display: flex;
@@ -66,14 +62,12 @@
     .cell.taken {
       pointer-events: none;
     }
-    /* Spielerzug: dunkles grünes X; Bot-Zug: roter Kreis */
     .cell.player-move {
       color: #27ae60 !important;
     }
     .cell.bot-move {
       color: #e74c3c !important;
     }
-    /* Dezente Hervorhebung der Gewinnkombination */
     .cell.win {
       border-color: gold;
       box-shadow: 0 0 8px gold;
@@ -83,7 +77,6 @@
       from { transform: scale(1); }
       to { transform: scale(1.05); }
     }
-    /* Neustart-Button weiter unten, mit weißem Hintergrund */
     .restart-container {
       margin-top: 80px;
     }
@@ -101,7 +94,6 @@
     .reset:hover {
       background-color: #ecf0f1;
     }
-    /* Feuerwerks-Animation: Explosion an beliebigen Stellen im Viewport */
     @keyframes firework {
       0% {
         transform: translate(0, 0) scale(0);
@@ -116,7 +108,6 @@
         opacity: 0;
       }
     }
-    /* Neue Animation für Niederlage – ein Shake-Effekt */
     @keyframes shake {
       0% { transform: translate(0, 0); }
       20% { transform: translate(-10px, 0); }
@@ -128,7 +119,6 @@
     .defeat-animation {
       animation: shake 0.8s;
     }
-    /* Modal-Styling */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -149,13 +139,39 @@
       color: #2c3e50;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
-    /* Nur den <p>-Text im Pop-up vergrößern und mehr Abstand zum Button */
     .modal-content p {
       font-size: 2em;
       margin: 0 0 40px;
     }
     .hidden {
       display: none;
+    }
+
+    /* Responsive Anpassungen für kleinere Displays (Smartphones) */
+    @media (max-width: 600px) {
+      .board {
+        width: 90vw;
+        height: 90vw;
+        gap: 10px;
+      }
+      .cell {
+        font-size: 3em;
+      }
+      .message {
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+      .reset {
+        padding: 12px 24px;
+        font-size: 1.2em;
+      }
+      .modal-content {
+        padding: 20px;
+      }
+      .modal-content p {
+        font-size: 1.5em;
+        margin-bottom: 30px;
+      }
     }
   </style>
 </head>
@@ -186,7 +202,6 @@
     const modalRestartBtn = document.getElementById("modalRestartBtn");
 
     let gameBoard = ["", "", "", "", "", "", "", "", ""];
-    // Verwende ein Unicode-X (✖) für den Spieler und einen roten Kreis (⭕) für den Bot
     const playerSymbol = "✖";
     const botSymbol = "⭕";
     let currentPlayer = playerSymbol;
@@ -210,9 +225,7 @@
       if (!gameActive) return;
       const index = event.currentTarget.dataset.index;
       if (gameBoard[index] !== "") return;
-
       makeMove(index, playerSymbol);
-
       if (checkWinner(playerSymbol)) {
         highlightWinningCells(playerSymbol);
         endGame("Du hast gewonnen!");
@@ -222,7 +235,6 @@
         endGame("Unentschieden! Toll gespielt - probiere es gleich noch einmal.");
         return;
       }
-
       currentPlayer = botSymbol;
       setTimeout(botMove, 500);
     }
@@ -233,18 +245,13 @@
       const cellEl = boardEl.querySelector(`[data-index='${index}']`);
       cellEl.innerText = symbol;
       cellEl.classList.add("taken");
-      if (symbol === playerSymbol) {
-        cellEl.classList.add("player-move");
-      } else {
-        cellEl.classList.add("bot-move");
-      }
+      cellEl.classList.add(symbol === playerSymbol ? "player-move" : "bot-move");
       cellEl.removeEventListener("click", handleCellClick);
     }
 
     function botMove() {
       if (!gameActive) return;
       let chosenIndex;
-      
       chosenIndex = getWinningMove(botSymbol);
       if (chosenIndex === null) {
         chosenIndex = getWinningMove(playerSymbol);
@@ -264,9 +271,7 @@
           .filter(idx => idx !== null);
         chosenIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
       }
-      
       makeMove(chosenIndex, botSymbol);
-
       if (checkWinner(botSymbol)) {
         highlightWinningCells(botSymbol);
         endGame("Das war knapp! Versuche es noch einmal - Übung macht den Meister!");
@@ -348,7 +353,6 @@
     }
 
     function triggerFireworkBurst() {
-      // Explosion an einer zufälligen Stelle im gesamten Viewport
       const explosionX = Math.random() * 100;
       const explosionY = Math.random() * 100;
       const numPieces = 20;
@@ -375,7 +379,6 @@
       }
     }
 
-    // Neuer Niederlage-Effekt: Shake und anschließend Anzeige des selbst gestalteten Pop-ups
     function startDefeatAnimation() {
       boardEl.classList.add("defeat-animation");
       boardEl.addEventListener("animationend", () => {
