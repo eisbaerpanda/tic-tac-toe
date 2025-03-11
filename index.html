@@ -80,6 +80,8 @@
     }
     .restart-container {
       margin-top: 80px;
+      display: flex;
+      gap: 20px;
     }
     .reset {
       padding: 16px 32px;
@@ -183,13 +185,16 @@
   </div>
   <div class="restart-container">
     <button class="reset" id="resetBtn">🔄 Neustart</button>
+    <button class="reset" id="closeBtn">❌ Schließen</button>
   </div>
 
   <!-- Custom Modal für Niederlage -->
   <div id="defeatModal" class="modal-overlay hidden">
     <div class="modal-content">
+      <h2>Du hast verloren!</h2>
       <p>Möchtest du einen neuen Versuch starten?</p>
       <button id="modalRestartBtn" class="reset">🔄 Neustart</button>
+      <button id="modalCloseBtn" class="reset">❌ Schließen</button>
     </div>
   </div>
 
@@ -199,8 +204,10 @@
     const boardEl = document.getElementById("board");
     const messageEl = document.getElementById("message");
     const resetBtn = document.getElementById("resetBtn");
+    const closeBtn = document.getElementById("closeBtn");
     const defeatModal = document.getElementById("defeatModal");
     const modalRestartBtn = document.getElementById("modalRestartBtn");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
 
     let gameBoard = ["", "", "", "", "", "", "", "", ""];
     const playerSymbol = "✖";
@@ -409,10 +416,18 @@
       createBoard();
     }
 
+    // Schließen der Seite, falls möglich, oder Umleitung zu about:blank
+    function closePage() {
+      window.open('', '_self').close();
+      window.location.href = "about:blank";
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       createBoard();
       resetBtn.addEventListener("click", resetGame);
+      closeBtn.addEventListener("click", closePage);
       modalRestartBtn.addEventListener("click", resetGame);
+      modalCloseBtn.addEventListener("click", closePage);
     });
   </script>
 </body>
